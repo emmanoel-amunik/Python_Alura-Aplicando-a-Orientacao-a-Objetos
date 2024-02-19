@@ -1,3 +1,6 @@
+from models.rating import Rating
+
+
 class Restaurant:
 
     restaurants = []
@@ -6,6 +9,7 @@ class Restaurant:
         self._name = name.title()
         self._category = category.upper()
         self._activate = False
+        self._rating = []
         Restaurant.restaurants.append(self)
 
     def __str__(self):
@@ -20,11 +24,13 @@ class Restaurant:
     @classmethod
     def list_restaurants(cls):
 
-        print(f"{'Name'.ljust(27)} {'Category'.ljust(27)} {'Status'}\n")
+        print(f"{'Name'.ljust(27)} {'Category'.ljust(27)} {'Rating'.ljust(27)}"
+              f"{'Status'}\n")
 
         for restaurant in cls.restaurants:
             print(f"{restaurant.get_name().ljust(25)} | "
                   f"{restaurant.get_category().ljust(25)} | "
+                  f"{str(restaurant.rating_average).ljust(25)} | "
                   f"{restaurant.activate}")
 
     @property
@@ -34,9 +40,18 @@ class Restaurant:
     def change_status(self):
         self._activate = not self._activate
 
+    def collect_rating(self, client, grade):
+        rating = Rating(client, grade)
+        self._rating.append(rating)
 
-restaurant_square = Restaurant("square", "Gourmet")
-restaurant_pizza = Restaurant("pizza Express", "Italian")
+    @property
+    def rating_average(self):
 
-Restaurant.change_status(restaurant_square)
-Restaurant.list_restaurants()
+        if not self._rating:
+            return "None"
+
+        grades_sum = sum(rating._grade for rating in self._rating)
+        grades_quantity = len(self._rating)
+        average = round(grades_sum / grades_quantity, 1)
+
+        return average
