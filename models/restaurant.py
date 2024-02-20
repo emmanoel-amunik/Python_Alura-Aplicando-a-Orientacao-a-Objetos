@@ -41,14 +41,16 @@ class Restaurant:
         self._activate = not self._activate
 
     def collect_rating(self, client, grade):
-        rating = Rating(client, grade)
-        self._rating.append(rating)
+
+        if 0 < grade < 5:
+            rating = Rating(client, grade)
+            self._rating.append(rating)
 
     @property
     def rating_average(self):
 
         if not self._rating:
-            return "None"
+            return "-"
 
         grades_sum = sum(rating._grade for rating in self._rating)
         grades_quantity = len(self._rating)
